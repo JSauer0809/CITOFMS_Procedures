@@ -1,0 +1,58 @@
+% Vacuum Calculations for CI-CITMS
+% Calculates pressure of 3 Chamber CI-CITMS, with pumps on C1, C2, and C3
+
+%(C)Critical orifice conductance for IMR->CIT and CIT->Detector, in cm^2
+% Where C = ~20(A) where Area is in cm^2
+%orifice1 = 0.0228;
+orifice1 = 0.010;
+orifice2 = 0.0228;
+
+%(Q)Flow rate of reagent + analyte gas into IMR, mbar*L/s
+IMR_inflow = 3600;
+
+% Initializing Pumping speeds, sans conductance losses
+pumpini_1 = 60; %(L/min)
+pumpini_2 = 10; %(L/min)
+pump3 = 10*60; %(L/S converted to L/min)
+
+% Pump tubing conductance calculation (length in cm, diameter in cm)
+p1tubeL = 10;
+p1tubeD = 0.635;
+p1tubeC = 180*((p1tubeD^4)/p1tubeL)*60;
+%kf16 tubing is 1.75cm
+p2tubeL = 10;
+p2tubeD = 1.75; 
+p2tubeC = 12*((p2tubeD^2)/p2tubeL);
+% Correction to pumping speed from tube conductance
+pump1 = 1/((1/pumpini_1) + (1/p1tubeC));
+pump2 = 1/((1/pumpini_2) + (1/p2tubeC));
+%
+
+syms p1 p2 p3
+eqn1 = p1*pump1 + orifice1*(p1-p2) == IMR_inflow;
+eqn2 = orifice1*(p1-p2) == orifice2*(p2-p3) + p2*pump2;
+eqn3 = orifice2*(p2-p3) == pump3*p3;
+sol = solve([eqn1, eqn2, eqn3], [p1, p2, p3]);
+p1Sol = sol.p1;
+p2Sol = sol.p2;
+p3Sol = sol.p3;
+vpa(p1Sol)
+vpa(p2Sol)
+vpa(p3Sol)
+
+
+
+%%
+%Vacuum Calculations for Clifford Front End
+
+pump1 = 110;
+pump2 = 1.722;
+
+syms p1 p2
+eqn1 = p1*pump1 + 0.0228*(p1-p2) == 3600;
+eqn2 = 0.0228*(p1-p2) == p2*pump2;
+sol = solve([eqn1, eqn2], [p1, p2]);
+p1Sol = sol.p1;
+p2Sol = sol.p2;
+vpa(p1Sol)
+vpa(p2Sol)
