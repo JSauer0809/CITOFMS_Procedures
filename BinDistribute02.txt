@@ -1,0 +1,21 @@
+#pragma rtGlobals=3		// Use modern global access method and strict wave access.
+function BinDistribute(Blank,Sample,ZagMass_Hist)
+	//Variables and Waves, ZagMass_Hist Can be obtained by taking a X width histogram of the mass axis
+	wave Blank, Sample, ZagMass_Hist
+	variable points = numpnts(ZagMass_Hist)
+	make /N= (points) BlankBin
+	make /N= (points) SampleBin
+	make /N= (points) SubtractBin
+	variable numerate = 0
+	variable i
+	//Nested Loops
+	for(i = 0; i<(points); i+=1)
+		variable j
+		for (j=0; j<(ZagMass_Hist[i]);j+=1)
+			BlankBin[i] = BlankBin[i] + Blank[Numerate+j]
+			SampleBin[i] = SampleBin[i] + Sample[Numerate+j] 
+		endfor
+		numerate = numerate + j
+	endfor
+	SubtractBin = SampleBin - BlankBin
+end
